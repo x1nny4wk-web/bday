@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDAY</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darknight: '#0c071e',
+                        deepindigo: '#1a103c',
+                        neonpurple: '#9333ea',
+                        starlight: '#e9d5ff',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c071e;
+            color: #e9d5ff;
+            overflow-x: hidden;
+        }
+
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        #starfield {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow-text {
+            text-shadow:
+                0 0 25px rgba(147, 51, 234, 0.6),
+                0 0 50px rgba(168, 85, 247, 0.4);
+        }
+
+        .glow-box {
+            box-shadow: 0 0 35px rgba(147, 51, 234, 0.25);
+        }
+
+        .glow-box:hover {
+            box-shadow: 0 0 45px rgba(168, 85, 247, 0.45);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen w-full">
+
+    <canvas id="starfield"></canvas>
+
+    <!-- Navigation Header / Minimal Brand Bar -->
+    <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-[#0c071e]/80 border-b border-purple-900/40">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2 justify-start">
+    <i class="fa-solid fa-moon text-purple-400 text-xl animate-pulse"></i>
+    <span class="font-serif font-bold text-lg tracking-wider text-white">
+        for ma cute lil baka ><
+    </span>
+</div>
+            
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container (Beranda Only) -->
+    <main class="relative z-10 flex-grow pt-28 pb-16 px-4 max-w-4xl mx-auto w-full space-y-12">
+        
+        <!-- Hero Banner -->
+        <div class="text-center py-6">
+            <div class="inline-block mb-4 px-4 py-1.5 rounded-full bg-purple-950/80 border border-purple-700/50 text-purple-300 text-xs md:text-sm tracking-widest uppercase animate-bounce">
+                <i class="fa-solid fa-star text-yellow-300 mr-1"></i> Special Celebration <i class="fa-solid fa-star text-yellow-300 ml-1"></i>
+            </div>
+            <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold font-serif tracking-tight mb-6 text-white glow-text">
+                Happy Birthday<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-300 to-indigo-300">CEMAD</span>
+            </h1>
+            <p class="text-base sm:text-xl text-purple-200/80 max-w-2xl mx-auto font-light leading-relaxed mb-8">
+               for my favorite person who I’ll always love and be proud of.
+        </div>
+
+<!-- Interactive Cake & Candle Section -->
+<div class="bg-deepindigo/40 backdrop-blur-xl border border-purple-900/50 rounded-3xl p-6 sm:p-8 text-center glow-box">
+
+    <h3 class="text-xl sm:text-2xl font-serif font-bold text-white mb-2">
+        Your Birthday Cake 🎂
+    </h3>
+
+    <p class="text-purple-300/80 text-sm mb-5">
+        Make a wish before blowing the candle!
+    </p>
+
+    <!-- Wish Input -->
+    <div class="max-w-md mx-auto mb-6">
+        <textarea
+            id="wishInput"
+            rows="3"
+            maxlength="300"
+            placeholder="Write your wish here…"
+            class="w-full rounded-2xl bg-black/30 border border-purple-700/50 text-white placeholder-purple-300/40 p-4 text-sm focus:outline-none focus:border-purple-400 resize-none"
+        ></textarea>
+    </div>
+
+    <!-- Cake -->
+    <div
+        id="cakeContainer"
+        class="relative py-8 inline-block select-none opacity-50 cursor-not-allowed"
+        onclick="blowCandle()"
+    >
+
+        <div class="text-6xl sm:text-8xl transition transform hover:scale-105">
+            🎂
+        </div>
+
+        <!-- Flame -->
+        <div
+            id="candleFlame"
+            class="absolute -top-2 left-1/2 transform -translate-x-1/2 text-3xl animate-bounce"
+        >
+            🕯️🔥
+        </div>
+
+    </div>
+
+    <!-- Status -->
+    <div
+        id="candleStatus"
+        class="text-purple-300 font-medium text-sm mt-4 min-h-[24px]"
+    >
+        Write your wish first
+    </div>
+
+</div>
+
+<script>
+let wishWritten = false;
+let candleBlown = false;
+
+const wishInput = document.getElementById("wishInput");
+const cakeContainer = document.getElementById("cakeContainer");
+const candleStatus = document.getElementById("candleStatus");
+const candleFlame = document.getElementById("candleFlame");
+
+wishInput.addEventListener("input", function () {
+
+    if (wishInput.value.trim().length > 0) {
+
+        wishWritten = true;
+
+        cakeContainer.classList.remove(
+            "opacity-50",
+            "cursor-not-allowed"
+        );
+
+        cakeContainer.classList.add("cursor-pointer");
+
+        candleStatus.textContent =
+            "Your wish is ready! Click the cake and blow out the candles!";
+
+    } else {
+
+        wishWritten = false;
+
+        cakeContainer.classList.add(
+            "opacity-50",
+            "cursor-not-allowed"
+        );
+
+        cakeContainer.classList.remove("cursor-pointer");
+
+        candleStatus.textContent =
+            "Write your wish first...";
+    }
+});
+
+function blowCandle() {
+    if (!wishWritten) {
+        candleStatus.textContent =
+            "You need to write your wish first!";
+        return;
+    }
+
+    if (candleBlown) {
+        candleStatus.textContent =
+            "The candle is already blown out! Make a new wish!";
+        return;
+    }
+
+    candleBlown = true;
+
+    // Animate the flame disappearing
+    candleFlame.classList.add("animate-fade-out");
+    setTimeout(() => {
+        candleFlame.style.display = "none";
+    }, 500);
+
+    candleStatus.textContent =
+        "Your wish has been made! Enjoy your cake! 🎉✨";
+}
+</script>
+        <!-- Special Wish Card Section -->
+        <div class="bg-deepindigo/40 backdrop-blur-xl border border-purple-900/50 rounded-3xl p-6 sm:p-10 glow-box relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl pointer-events-none select-none text-purple-300">
+                ✨
+            </div>
+            <h3 class="text-2xl font-serif font-bold text-white mb-4 flex items-center justify-center space-x-2">
+                <span>💭</span>
+                <span>A Letter Written for You</span>
+            </h3>
+            <hr>
+           <div class="space-y-4 text-purple-200/90 text-sm sm:text-base font-light leading-relaxed text-center max-w-2xl mx-auto">
+    <p></p>
+    <p>
+        If I could gather every moment of gratitude I've ever felt and place it into words,
+        this letter would still not be enough. Thank you for being a friend whose presence
+        makes every path a little easier to walk. Thank you for taking me beyond the places
+        I already knew, showing me roads I had never walked and moments I might never have
+        experienced on my own. When I look back someday, I know I will remember them fondly,
+        not because of where we went, but because of who was beside me.
+    </p>
+
+    <p>
+        I'm also sorry for all the unnecessary drama between us, even over the smallest things.
+        For the misunderstandings, the arguments, and all the moments when something simple
+        somehow became more complicated than it needed to be. We may not always understand
+        each other, and we may annoy each other more than we'd like to admit, but despite all
+        of that, I'm grateful that we're still here. Somehow, through all the chaos, our
+        friendship always finds its way back.
+    </p>
+
+    <p>
+        As time carries us toward different futures, I hope your dreams never lose their wings.
+        I hope you find the places you've always wanted to see, achieve the things you've worked
+        so hard for, and find the happiness you so easily give to others. You deserve beautiful
+        things, and wherever life takes you, I hope you never forget that there was once a friend
+        who was deeply grateful to have walked a small part of the journey beside you.
+    </p>
+
+    <div class="pt-4 border-t border-purple-900/40 text-xs text-purple-400 font-semibold tracking-wider uppercase">
+        - Indi -
+    </div>
+
+</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 py-6 text-center border-t border-purple-900/40 bg-[#0c071e]/90 text-purple-400/70 text-xs">
+        <p><span class="text-white font-semibold">I Love You. Always.</span>.</p>
+    </footer>
+
+    <!-- JavaScript Script -->
+    <script>
+        // Starry Night Background Canvas
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let stars = [];
+        const numStars = 150;
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Star {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 2;
+                this.baseAlpha = Math.random() * 0.7 + 0.3;
+                this.alpha = this.baseAlpha;
+                this.twinkleSpeed = Math.random() * 0.02 + 0.005;
+                this.angle = Math.random() * Math.PI * 2;
+            }
+            update() {
+                this.angle += this.twinkleSpeed;
+                this.alpha = this.baseAlpha + Math.sin(this.angle) * 0.3;
+                if (this.alpha < 0.1) this.alpha = 0.1;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(233, 213, 255, ${this.alpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < numStars; i++) {
+            stars.push(new Star());
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, width, height);
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+    </script>
+</body>
+</html>
